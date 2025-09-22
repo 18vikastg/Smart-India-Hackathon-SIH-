@@ -1,0 +1,25 @@
+{
+  "timestamp": "2025-09-22T19:48:39.968299",
+  "results": [
+    {
+      "success": true,
+      "timestamp": "2025-09-22T19:48:39.967476",
+      "predictions": {
+        "breed": "Gir",
+        "confidence": 0.85
+      },
+      "image_path": "uploads/batch_20250922_194839_kcow.jpg"
+    }
+  ],
+  "statistics": {
+    "total_processed": 1,
+    "breed_distribution": {
+      "Gir": 1
+    },
+    "average_confidence": 0.85,
+    "most_common_breed": [
+      "Gir",
+      1
+    ]
+  }
+}
