@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Cattle Breed Recognition - AI Powered</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff9933 0%, #ffffff 50%, #138808 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            max-width: 1000px;
+            margin: 0 auto;
+            overflow: hidden;
+            border: 3px solid #ff9933;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #ff9933 0%, #138808 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header::before {
+            content: "🇮🇳";
+            position: absolute;
+            top: 1rem;
+            right: 2rem;
+            font-size: 3rem;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header .emoji {
+            font-size: 5rem;
+            margin-bottom: 1rem;
+            filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));
+        }
+        
+        .header .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-top: 1rem;
+        }
+        
+        .indian-flag {
+            background: linear-gradient(to bottom, #ff9933 33%, #ffffff 33%, #ffffff 66%, #138808 66%);
+            height: 8px;
+            width: 100%;
+            margin: 1rem 0;
+        }
+        
+        .content {
+            padding: 3rem;
+        }
+        
+        .indian-badge {
+            background: linear-gradient(45deg, #ff9933, #ffffff, #138808);
+            color: #2c3e50;
+            padding: 1rem 2rem;
+            border-radius: 30px;
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 3rem;
+            border: 3px solid #ff9933;
+            box-shadow: 0 10px 20px rgba(255, 153, 51, 0.3);
+            font-size: 1.2rem;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            border: 2px solid #ff9933;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-card .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card h3 {
+            color: #e65100;
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+        
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .upload-section {
+            background: linear-gradient(135deg, #fff8e1, #ffecb3);
+            border: 3px solid #ff9933;
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            box-shadow: 0 15px 30px rgba(255, 153, 51, 0.2);
+        }
+        
+        .upload-section h2 {
+            color: #e65100;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .upload-area {
+            border: 3px dashed #ff9933;
+            border-radius: 15px;
+            padding: 3rem;
+            background: white;
+            margin-bottom: 2rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            border-color: #e65100;
+            background: #fff8f0;
+        }
+        
+        .upload-area.dragover {
+            border-color: #4caf50;
+            background: #e8f5e8;
+        }
+        
+        .upload-icon {
+            font-size: 4rem;
+            color: #ff9933;
+            margin-bottom: 1rem;
+        }
+        
+        .upload-text {
+            color: #2c3e50;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .upload-hint {
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .analyze-btn {
+            background: linear-gradient(135deg, #ff9933 0%, #138808 100%);
+            color: white;
+            border: none;
+            padding: 1.2rem 3rem;
+            border-radius: 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 20px rgba(255, 153, 51, 0.3);
+        }
+        
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(255, 153, 51, 0.4);
+        }
+        
+        .analyze-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .breed-showcase {
+            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
+            border: 3px solid #4caf50;
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .breed-showcase h3 {
+            color: #2e7d32;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .breed-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .breed-tag {
+            background: white;
+            color: #2e7d32;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            border: 2px solid #4caf50;
+            box-shadow: 0 5px 10px rgba(76, 175, 80, 0.2);
+        }
+        
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(116, 185, 255, 0.3);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .spinner {
+            border: 4px solid #ff9933;
+            border-top: 4px solid transparent;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 2rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="emoji">🐄</div>
+            <h1>Indian Cattle Breed Recognition</h1>
+            <div class="indian-flag"></div>
+            <p class="subtitle">AI-Powered Recognition of Authentic Indian Bovine Breeds</p>
+        </div>
+        
+        <div class="content">
+            <!-- Indian Heritage Badge -->
+            <div class="indian-badge">
+                🇮🇳 Specialized in Authentic Indian Cattle Breeds - 41 Breeds Recognized 🇮🇳
+            </div>
+            
+            <!-- Features Grid -->
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="icon">🧠</div>
+                    <h3>AI-Powered Recognition</h3>
+                    <p>Advanced deep learning model trained specifically on Indian cattle breeds with 52.3% accuracy</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="icon">🇮🇳</div>
+                    <h3>Indian Heritage Focus</h3>
+                    <p>Specialized in authentic Indian breeds like Gir, Sahiwal, Tharparkar, Ongole, and many more</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="icon">📊</div>
+                    <h3>Comprehensive Analysis</h3>
+                    <p>Detailed breed information including origin, characteristics, milk production, and temperament</p>
+                </div>
+            </div>
+            
+            <!-- Upload Section -->
+            <div class="upload-section">
+                <h2>🔍 Analyze Your Cattle Image</h2>
+                
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="upload-area" id="uploadArea">
+                        <div class="upload-icon">📸</div>
+                        <div class="upload-text">Click to select image or drag & drop</div>
+                        <div class="upload-hint">Supports JPG, PNG, GIF, BMP (Max 16MB)</div>
+                        <input type="file" id="fileInput" name="file" class="file-input" accept="image/*" required>
+                    </div>
+                    
+                    <button type="submit" class="analyze-btn" id="analyzeBtn" disabled>
+                        🔍 Analyze Indian Cattle Breed
+                    </button>
+                </form>
+                
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Analyzing your cattle image...</p>
+                </div>
+            </div>
+            
+            <!-- Statistics -->
+            <div class="stats-section">
+                <div class="stat-card">
+                    <div class="stat-number">41</div>
+                    <div class="stat-label">Indian Breeds</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">52.3%</div>
+                    <div class="stat-label">Model Accuracy</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">5,926</div>
+                    <div class="stat-label">Training Images</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Indian Focus</div>
+                </div>
+            </div>
+            
+            <!-- Breed Showcase -->
+            <div class="breed-showcase">
+                <h3>🐄 Recognized Indian Cattle Breeds</h3>
+                <div class="breed-list">
+                    <div class="breed-tag">Gir</div>
+                    <div class="breed-tag">Sahiwal</div>
+                    <div class="breed-tag">Tharparkar</div>
+                    <div class="breed-tag">Red Sindhi</div>
+                    <div class="breed-tag">Hariana</div>
+                    <div class="breed-tag">Ongole</div>
+                    <div class="breed-tag">Kankrej</div>
+                    <div class="breed-tag">Rathi</div>
+                    <div class="breed-tag">Deoni</div>
+                    <div class="breed-tag">Hallikar</div>
+                    <div class="breed-tag">Banni</div>
+                    <div class="breed-tag">Bargur</div>
+                    <div class="breed-tag">Dangi</div>
+                    <div class="breed-tag">Amritmahal</div>
+                    <div class="breed-tag">+ 27 More</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const uploadForm = document.getElementById('uploadForm');
+        const loading = document.getElementById('loading');
+        
+        // Click to upload
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileSelect();
+            }
+        });
+        
+        // File selection
+        fileInput.addEventListener('change', handleFileSelect);
+        
+        function handleFileSelect() {
+            const file = fileInput.files[0];
+            if (file) {
+                // Validate file type
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/bmp'];
+                if (!validTypes.includes(file.type)) {
+                    alert('Please select a valid image file (JPG, PNG, GIF, BMP)');
+                    return;
+                }
+                
+                // Validate file size (16MB)
+                if (file.size > 16 * 1024 * 1024) {
+                    alert('File size must be less than 16MB');
+                    return;
+                }
+                
+                // Update UI
+                uploadArea.innerHTML = `
+                    <div class="upload-icon">✅</div>
+                    <div class="upload-text">Image selected: ${file.name}</div>
+                    <div class="upload-hint">Click "Analyze" to identify the breed</div>
+                `;
+                analyzeBtn.disabled = false;
+            }
+        }
+        
+        // Form submission
+        uploadForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            
+            // Show loading
+            document.querySelector('.upload-section').style.display = 'none';
+            loading.style.display = 'block';
+            
+            // Submit form
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else {
+                    return response.json();
+                }
+            })
+            .then(data => {
+                if (data && data.error) {
+                    alert('Error: ' + data.error);
+                    document.querySelector('.upload-section').style.display = 'block';
+                    loading.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while analyzing the image');
+                document.querySelector('.upload-section').style.display = 'block';
+                loading.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
