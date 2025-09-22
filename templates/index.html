@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Cattle Breed Recognition - Upload Image</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 90%;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header .emoji {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 3rem;
+            text-align: center;
+            background: #f8f9ff;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .upload-area:hover {
+            background: #e8edff;
+            border-color: #764ba2;
+        }
+        
+        .upload-area.dragover {
+            background: #e8edff;
+            border-color: #764ba2;
+            transform: scale(1.02);
+        }
+        
+        .upload-icon {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+        
+        .upload-text {
+            font-size: 1.2rem;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .upload-hint {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .selected-file {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            display: none;
+        }
+        
+        .selected-file.show {
+            display: block;
+        }
+        
+        .file-info {
+            color: #2e7d32;
+            font-weight: 500;
+        }
+        
+        .model-status {
+            background: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            margin: 1rem 0 2rem 0;
+            text-align: center;
+            border-left: 5px solid;
+        }
+        
+        .model-status.success {
+            border-left-color: #4CAF50;
+            background: #f8fff8;
+        }
+        
+        .model-status.error {
+            border-left-color: #f44336;
+            background: #fff8f8;
+        }
+        
+        .model-status h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.1rem;
+        }
+        
+        .model-status p {
+            margin: 0;
+            color: #666;
+        }
+        
+        .model-status code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .features {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #eee;
+        }
+        
+        .features h3 {
+            color: #333;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .feature-item {
+            background: #f8f9ff;
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e0e6ff;
+        }
+        
+        .feature-item .icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-item .label {
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .nav-links {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+        }
+        
+        .nav-links a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 1rem;
+            font-weight: 500;
+        }
+        
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+                <div class="hero">
+            <h1>🐄 Fine-Tuned Cattle Breed Recognition</h1>
+            <p class="subtitle">Custom-trained AI model on 1,208 European cattle images</p>
+            {% if model_loaded %}
+            <div class="model-status success">
+                <h3>✅ Fine-Tuned Model Active</h3>
+                <p>Trained ResNet50 • {{ model_accuracy }}% Accuracy • 5 Breeds</p>
+            </div>
+            {% else %}
+            <div class="model-status error">
+                <h3>❌ Fine-Tuned Model Not Available</h3>
+                <p>Run <code>python cattle_finetuning.py</code> to train the model</p>
+            </div>
+            {% endif %}
+            <div class="features">
+                <div class="feature">
+                    <h3>🧠 Custom Training</h3>
+                    <p>Fine-tuned on your specific European cattle dataset</p>
+                </div>
+                <div class="feature">
+                    <h3>🎯 High Accuracy</h3>
+                    <p>84.3% validation accuracy with transfer learning</p>
+                </div>
+                <div class="feature">
+                    <h3>📊 5 Breeds</h3>
+                    <p>Ayrshire, Brown Swiss, Holstein Friesian, Jersey, Red Dane</p>
+                </div>
+            </div>
+        </div>
+        
+        <form id="uploadForm" enctype="multipart/form-data" method="post" action="/upload">
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📸</div>
+                <div class="upload-text">Click to select image or drag & drop</div>
+                <div class="upload-hint">Supports JPG, PNG, GIF, BMP, TIFF (Max 16MB)</div>
+                <input type="file" id="fileInput" name="file" accept="image/*" required>
+            </div>
+            
+            <div class="selected-file" id="selectedFile">
+                <div class="file-info" id="fileInfo"></div>
+            </div>
+            
+            <button type="submit" class="btn" id="analyzeBtn" disabled>
+                🔍 Analyze Cattle Breed
+            </button>
+        </form>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Analyzing cattle image and identifying breed...</p>
+            <p style="font-size: 0.9rem; color: #666; margin-top: 0.5rem;">
+                This may take a few moments while we process the image.
+            </p>
+        </div>
+        
+        <div class="features">
+            <h3>🎯 What We Analyze</h3>
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <div class="icon">🎨</div>
+                    <div class="label">Coat Color & Pattern</div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">🦬</div>
+                    <div class="label">Horn Shape & Size</div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">👂</div>
+                    <div class="label">Ear Characteristics</div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">🏗️</div>
+                    <div class="label">Body Build & Frame</div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">🔺</div>
+                    <div class="label">Hump Presence</div>
+                </div>
+                <div class="feature-item">
+                    <div class="icon">📏</div>
+                    <div class="label">Dewlap Features</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="nav-links">
+            <a href="/demo">📊 View Demo</a>
+            <a href="/about">ℹ️ About System</a>
+            <a href="/api/analyze">🔌 API Documentation</a>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const selectedFile = document.getElementById('selectedFile');
+        const fileInfo = document.getElementById('fileInfo');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const uploadForm = document.getElementById('uploadForm');
+        const loading = document.getElementById('loading');
+
+        // Click to upload
+        uploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Drag and drop handlers
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileSelect();
+            }
+        });
+
+        // File selection handler
+        fileInput.addEventListener('change', handleFileSelect);
+
+        function handleFileSelect() {
+            const file = fileInput.files[0];
+            if (file) {
+                const fileName = file.name;
+                const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+                const fileType = file.type;
+
+                fileInfo.innerHTML = `
+                    <strong>Selected:</strong> ${fileName}<br>
+                    <strong>Size:</strong> ${fileSize} MB<br>
+                    <strong>Type:</strong> ${fileType}
+                `;
+                
+                selectedFile.classList.add('show');
+                analyzeBtn.disabled = false;
+                analyzeBtn.textContent = '🔍 Analyze Cattle Breed';
+            }
+        }
+
+        // Form submission handler
+        uploadForm.addEventListener('submit', (e) => {
+            loading.classList.add('show');
+            analyzeBtn.disabled = true;
+            analyzeBtn.textContent = '⏳ Processing...';
+        });
+
+        // Auto-focus for better UX
+        document.addEventListener('DOMContentLoaded', () => {
+            uploadArea.focus();
+        });
+    </script>
+</body>
+</html>

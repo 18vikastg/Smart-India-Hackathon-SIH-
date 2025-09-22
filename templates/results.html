@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cattle Breed Analysis Results</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 1200px;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header .emoji {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .content {
+            padding: 2rem;
+        }
+        
+        .section {
+            margin-bottom: 2rem;
+            background: #f8f9ff;
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 1px solid #e0e6ff;
+        }
+        
+        .section-title {
+            color: #333;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .image-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .info-item {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 0.25rem;
+        }
+        
+        .info-value {
+            color: #333;
+            font-size: 1.1rem;
+        }
+        
+        .breed-predictions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        .breed-category {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 2px solid #e0e6ff;
+        }
+        
+        .category-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-align: center;
+            padding: 0.5rem;
+            border-radius: 8px;
+        }
+        
+        .indian-breeds .category-title {
+            background: #fff3e0;
+            color: #e65100;
+            border: 1px solid #ffcc02;
+        }
+        
+        .european-breeds .category-title {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #4caf50;
+        }
+        
+        .breed-match {
+            background: #f8f9ff;
+            border: 1px solid #e0e6ff;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .breed-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .confidence {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+        
+        .confidence.high {
+            color: #2e7d32;
+        }
+        
+        .confidence.medium {
+            color: #f57c00;
+        }
+        
+        .confidence.low {
+            color: #d32f2f;
+        }
+        
+        .breed-description {
+            color: #666;
+            line-height: 1.4;
+            margin-bottom: 0.5rem;
+        }
+        
+        .matching-features {
+            margin-top: 0.5rem;
+        }
+        
+        .feature-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        .feature-tag {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            border: 1px solid #bbdefb;
+        }
+        
+        .features-used {
+            background: #fff8e1;
+            border: 1px solid #ffcc02;
+        }
+        
+        .feature-item {
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .feature-value {
+            color: #666;
+            margin-left: 0.5rem;
+        }
+        
+        .actions {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #eee;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin: 0.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .confidence-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+        
+        .confidence-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .confidence-fill.high {
+            background: linear-gradient(90deg, #4caf50, #8bc34a);
+        }
+        
+        .confidence-fill.medium {
+            background: linear-gradient(90deg, #ff9800, #ffc107);
+        }
+        
+        .confidence-fill.low {
+            background: linear-gradient(90deg, #f44336, #ff5722);
+        }
+        
+        @media (max-width: 768px) {
+            .breed-predictions {
+                grid-template-columns: 1fr;
+            }
+            
+            .image-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="emoji">🎯</div>
+            <h1>Cattle Breed Analysis Results</h1>
+            <p>Analysis completed at {{ result.upload_time }}</p>
+        </div>
+        
+        <div class="content">
+            <!-- Image Information -->
+            <div class="section">
+                <h2 class="section-title">📸 Image Information</h2>
+                <div class="image-info">
+                    <div class="info-item">
+                        <div class="info-label">Filename</div>
+                        <div class="info-value">{{ result.filename }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Resolution</div>
+                        <div class="info-value">{{ result.analysis.image_info.resolution }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">File Size</div>
+                        <div class="info-value">{{ result.analysis.image_info.file_size_mb }} MB</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Format</div>
+                        <div class="info-value">{{ result.analysis.image_info.format }}</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Features Used for Analysis -->
+            <div class="section features-used">
+                <h2 class="section-title">🔍 Features Analyzed</h2>
+                <div class="feature-grid">
+                    {% for feature, value in result.predictions.features_used.items() %}
+                    <div class="feature-item">
+                        <span class="feature-name">{{ feature.title() }}:</span>
+                        <span class="feature-value">{{ value }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Breed Predictions -->
+            <div class="section">
+                <h2 class="section-title">🐄 Breed Predictions</h2>
+                <div class="breed-predictions">
+                    <!-- Indian Breeds -->
+                    <div class="breed-category indian-breeds">
+                        <h3 class="category-title">🇮🇳 Indian Breeds</h3>
+                        {% for match in result.predictions.indian_breeds %}
+                        <div class="breed-match">
+                            <div class="breed-name">{{ match.breed }}</div>
+                            <div class="confidence {{ 'high' if match.confidence > 70 else 'medium' if match.confidence > 50 else 'low' }}">
+                                Confidence: {{ "%.1f"|format(match.confidence) }}%
+                            </div>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill {{ 'high' if match.confidence > 70 else 'medium' if match.confidence > 50 else 'low' }}" 
+                                     style="width: {{ match.confidence }}%"></div>
+                            </div>
+                            <div class="breed-description">{{ match.description }}</div>
+                            <div class="matching-features">
+                                <small><strong>Matching Features:</strong></small>
+                                <div class="feature-list">
+                                    {% for feature in match.matching_features %}
+                                    <span class="feature-tag">{{ feature }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- European Breeds -->
+                    <div class="breed-category european-breeds">
+                        <h3 class="category-title">🇪🇺 European Breeds</h3>
+                        {% if result.predictions.european_breeds %}
+                        <div class="breed-match">
+                            <div class="breed-name">{{ result.predictions.european_breeds.breed }}</div>
+                            <div class="confidence {{ 'high' if result.predictions.european_breeds.confidence > 70 else 'medium' if result.predictions.european_breeds.confidence > 50 else 'low' }}">
+                                Confidence: {{ "%.1f"|format(result.predictions.european_breeds.confidence) }}%
+                            </div>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill {{ 'high' if result.predictions.european_breeds.confidence > 70 else 'medium' if result.predictions.european_breeds.confidence > 50 else 'low' }}" 
+                                     style="width: {{ result.predictions.european_breeds.confidence }}%"></div>
+                            </div>
+                            <div class="breed-description">{{ result.predictions.european_breeds.description }}</div>
+                            <div class="matching-features">
+                                <small><strong>Key Characteristics:</strong></small>
+                                <div class="feature-list">
+                                    {% for feature in result.predictions.european_breeds.key_features %}
+                                    <span class="feature-tag">{{ feature }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="breed-match">
+                            <div class="breed-description">No strong European breed matches found for the analyzed features.</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="actions">
+                <a href="/" class="btn">📸 Analyze Another Image</a>
+                <a href="/demo" class="btn btn-secondary">📊 View Demo</a>
+                <a href="/about" class="btn btn-secondary">ℹ️ System Info</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
