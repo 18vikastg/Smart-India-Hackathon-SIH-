@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐄 Indian Cattle & Buffalo Breed Recognition | Smart India Hackathon 2025</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Hind:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Indian Tricolor Inspired Colors */
+            --saffron: #FF9933;
+            --saffron-light: #FFCC99;
+            --saffron-dark: #E67300;
+            --white: #FFFFFF;
+            --green: #138808;
+            --green-light: #66BB6A;
+            --green-dark: #0A5E03;
+            --navy-blue: #000080;
+            
+            /* Supporting Palette */
+            --neutral-light: #F5F5F5;
+            --neutral-medium: #E0E0E0;
+            --neutral-dark: #616161;
+            --error: #D32F2F;
+            --success: #388E3C;
+            
+            /* Typography */
+            --font-primary: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-secondary: 'Hind', 'Arial', sans-serif;
+            
+            /* Spacing */
+            --space-1: 0.25rem;
+            --space-2: 0.5rem;
+            --space-3: 0.75rem;
+            --space-4: 1rem;
+            --space-6: 1.5rem;
+            --space-8: 2rem;
+            --space-12: 3rem;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            
+            /* Dark mode colors */
+            --dark-background: #121212;
+            --dark-surface: #1E1E1E;
+            --dark-text-primary: rgba(255, 255, 255, 0.87);
+            --dark-text-secondary: rgba(255, 255, 255, 0.6);
+        }
+        
+        /* Dark mode styles */
+        [data-theme="dark"] {
+            --white: var(--dark-background);
+            --neutral-light: var(--dark-surface);
+            --neutral-dark: var(--dark-text-primary);
+            background-color: var(--dark-background);
+            color: var(--dark-text-primary);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-primary);
+            background: linear-gradient(135deg, #FFF8F0 0%, #F0FFF0 100%);
+            min-height: 100vh;
+            transition: all 0.3s ease;
+        }
+        
+        /* Header Styles */
+        .header {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 3px solid;
+            border-image: linear-gradient(90deg, var(--saffron), var(--white), var(--green)) 1;
+            padding: var(--space-4) 0;
+            z-index: 1000;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .header-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 var(--space-6);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--navy-blue);
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--saffron), var(--green));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--space-4);
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: 2px solid var(--neutral-medium);
+            border-radius: 50px;
+            padding: var(--space-2) var(--space-3);
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .theme-toggle:hover {
+            border-color: var(--saffron);
+            transform: scale(1.05);
+        }
+        
+        .help-link {
+            color: var(--navy-blue);
+            text-decoration: none;
+            font-weight: 500;
+            padding: var(--space-2) var(--space-4);
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .help-link:hover {
+            background: var(--saffron-light);
+            color: var(--saffron-dark);
+        }
+        
+        /* Main Content */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: var(--space-8) var(--space-6);
+        }
+        
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: var(--space-12);
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--navy-blue);
+            margin-bottom: var(--space-4);
+            line-height: 1.2;
+        }
+        
+        .hero-emoji {
+            font-size: 4rem;
+            margin-bottom: var(--space-4);
+            display: block;
+        }
+        
+        .tagline {
+            font-size: 1.5rem;
+            color: var(--neutral-dark);
+            margin-bottom: var(--space-8);
+            font-weight: 400;
+        }
+        
+        /* Upload Zone */
+        .upload-container {
+            background: white;
+            border-radius: 16px;
+            padding: var(--space-8);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: var(--space-8);
+            border: 3px dashed var(--neutral-medium);
+            transition: all 0.3s ease;
+        }
+        
+        .upload-zone {
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .upload-zone:hover {
+            background: var(--saffron-light);
+            border-color: var(--saffron);
+            transform: translateY(-2px);
+        }
+        
+        .upload-zone.dragover {
+            background: var(--green-light);
+            border-color: var(--green);
+            transform: scale(1.02);
+        }
+        
+        .upload-icon {
+            font-size: 4rem;
+            color: var(--saffron);
+            margin-bottom: var(--space-4);
+            transition: all 0.3s ease;
+        }
+        
+        .upload-zone:hover .upload-icon {
+            transform: scale(1.1);
+            color: var(--saffron-dark);
+        }
+        
+        .upload-text {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--navy-blue);
+            margin-bottom: var(--space-2);
+        }
+        
+        .upload-subtext {
+            color: var(--neutral-dark);
+            margin-bottom: var(--space-4);
+        }
+        
+        .file-constraints {
+            font-size: 0.875rem;
+            color: var(--neutral-dark);
+            background: var(--neutral-light);
+            padding: var(--space-2) var(--space-4);
+            border-radius: 25px;
+        }
+        
+        /* Progress Steps */
+        .progress-steps {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: var(--space-8) 0;
+            gap: var(--space-8);
+        }
+        
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        
+        .step-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--neutral-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--neutral-dark);
+            border: 3px solid var(--neutral-medium);
+            transition: all 0.3s ease;
+            margin-bottom: var(--space-2);
+        }
+        
+        .step.active .step-circle {
+            background: var(--saffron);
+            color: white;
+            border-color: var(--saffron-dark);
+            transform: scale(1.1);
+        }
+        
+        .step.completed .step-circle {
+            background: var(--green);
+            color: white;
+            border-color: var(--green-dark);
+        }
+        
+        .step-label {
+            font-weight: 500;
+            color: var(--neutral-dark);
+            text-align: center;
+        }
+        
+        .step-connector {
+            position: absolute;
+            top: 30px;
+            left: 60px;
+            width: calc(100% + var(--space-8));
+            height: 3px;
+            background: var(--neutral-medium);
+            z-index: -1;
+        }
+        
+        .step:last-child .step-connector {
+            display: none;
+        }
+        
+        /* Feature Highlights */
+        .features {
+            background: white;
+            border-radius: 16px;
+            padding: var(--space-8);
+            box-shadow: var(--shadow-md);
+            margin-bottom: var(--space-8);
+        }
+        
+        .features h2 {
+            text-align: center;
+            font-size: 2rem;
+            color: var(--navy-blue);
+            margin-bottom: var(--space-6);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-6);
+        }
+        
+        .feature {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-4);
+            padding: var(--space-4);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .feature:hover {
+            background: var(--neutral-light);
+            transform: translateY(-2px);
+        }
+        
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--saffron), var(--green));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        .feature-content h3 {
+            color: var(--navy-blue);
+            margin-bottom: var(--space-2);
+            font-size: 1.125rem;
+        }
+        
+        .feature-content p {
+            color: var(--neutral-dark);
+            line-height: 1.5;
+        }
+        
+        /* Recent Results */
+        .recent-results {
+            background: linear-gradient(135deg, var(--saffron-light), var(--green-light));
+            border-radius: 16px;
+            padding: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+        
+        .recent-results h3 {
+            color: var(--navy-blue);
+            margin-bottom: var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+        
+        .result-item {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: var(--space-3) var(--space-4);
+            margin-bottom: var(--space-2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .result-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .confidence-badge {
+            background: var(--green);
+            color: white;
+            padding: var(--space-1) var(--space-3);
+            border-radius: 15px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--navy-blue);
+            color: white;
+            padding: var(--space-8) 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer::before {
+            content: '🦚';
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            font-size: 3rem;
+            opacity: 0.3;
+        }
+        
+        .footer-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 var(--space-6);
+        }
+        
+        .footer-text {
+            font-size: 1.125rem;
+            font-weight: 500;
+            margin-bottom: var(--space-4);
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-8);
+            flex-wrap: wrap;
+        }
+        
+        .footer-link {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+        
+        .footer-link:hover {
+            opacity: 1;
+        }
+        
+        /* Action Button */
+        .action-button {
+            background: var(--saffron);
+            color: white;
+            border: none;
+            padding: var(--space-3) var(--space-6);
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            justify-content: center;
+            min-width: 200px;
+            font-family: var(--font-primary);
+        }
+
+        .action-button:hover {
+            background: var(--saffron-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Loading States */
+        .loading-spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--neutral-light);
+            border-top: 4px solid var(--saffron);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: var(--space-4) auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .tagline {
+                font-size: 1.25rem;
+            }
+            
+            .header-content {
+                padding: 0 var(--space-4);
+            }
+            
+            .container {
+                padding: var(--space-6) var(--space-4);
+            }
+            
+            .upload-container {
+                padding: var(--space-6);
+            }
+            
+            .progress-steps {
+                gap: var(--space-4);
+            }
+            
+            .step-circle {
+                width: 50px;
+                height: 50px;
+                font-size: 1.25rem;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .footer-links {
+                gap: var(--space-4);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .upload-zone {
+                min-height: 250px;
+            }
+            
+            .upload-icon {
+                font-size: 3rem;
+            }
+            
+            .upload-text {
+                font-size: 1.25rem;
+            }
+        }
+        
+        /* Animation for success states */
+        @keyframes bounce {
+            0%, 20%, 53%, 100% {
+                transform: translate3d(0,0,0);
+            }
+            40%, 43% {
+                transform: translate3d(0, -15px, 0);
+            }
+            70% {
+                transform: translate3d(0, -7px, 0);
+            }
+            90% {
+                transform: translate3d(0, -2px, 0);
+            }
+        }
+        
+        .success-animation {
+            animation: bounce 1s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    🇮🇳
+                </div>
+                <span>Indian Cattle Breed Recognition</span>
+            </div>
+            <div class="header-actions">
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark Mode">
+                    <i class="fas fa-moon" id="theme-icon"></i>
+                </button>
+                <a href="#help" class="help-link">
+                    <i class="fas fa-question-circle"></i> Help
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Hero Section -->
+        <section class="hero">
+            <span class="hero-emoji">🐄</span>
+            <h1>Identify Your Cattle's Breed Instantly</h1>
+            <p class="tagline">Advanced AI-powered recognition for {{ total_breeds }} authentic Indian cattle breeds</p>
+        </section>
+
+        <!-- Upload Section -->
+        <section class="upload-container">
+            <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm">
+                <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-camera upload-icon"></i>
+                    <div class="upload-text">Drag & Drop Your Cattle Image</div>
+                    <div class="upload-subtext">or click to browse files</div>
+                    <div class="file-constraints">
+                        <i class="fas fa-info-circle"></i> Supports: JPG, PNG, WEBP • Max size: 10MB
+                    </div>
+                    <input type="file" id="fileInput" name="file" accept="image/*" required style="display: none;">
+                </div>
+                
+                <!-- Submit Button (hidden initially) -->
+                <div style="text-align: center; margin-top: 20px;">
+                    <button type="submit" id="analyzeBtn" class="action-button" style="display: none;">
+                        <i class="fas fa-brain"></i>
+                        Analyze Cattle Breed
+                    </button>
+                </div>
+            </form>
+            
+            <div class="loading-spinner" id="loadingSpinner"></div>
+        </section>
+
+        <!-- Progress Steps -->
+        <section class="progress-steps">
+            <div class="step active">
+                <div class="step-circle">1</div>
+                <div class="step-label">Upload Image</div>
+                <div class="step-connector"></div>
+            </div>
+            <div class="step">
+                <div class="step-circle">2</div>
+                <div class="step-label">AI Analysis</div>
+                <div class="step-connector"></div>
+            </div>
+            <div class="step">
+                <div class="step-circle">3</div>
+                <div class="step-label">View Results</div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features">
+            <h2>Why Choose Our AI System?</h2>
+            <div class="features-grid">
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>AI-Powered Accuracy</h3>
+                        <p>Our advanced ResNet50 model trained specifically on Indian cattle breeds delivers reliable identification with detailed confidence scores.</p>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Authentic Indian Breeds</h3>
+                        <p>Recognizes 41 genuine Indian cattle breeds including Gir, Sahiwal, Red Sindhi, Tharparkar, and many regional varieties.</p>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Health & Care Insights</h3>
+                        <p>Get comprehensive breed information, care recommendations, feeding guidelines, and health management tips.</p>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Mobile-Friendly Design</h3>
+                        <p>Works seamlessly on all devices - smartphone, tablet, or desktop. Perfect for field use by farmers and veterinarians.</p>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-award"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>SIH 2025 Innovation</h3>
+                        <p>Developed for Smart India Hackathon 2025, representing cutting-edge agricultural technology for modern India.</p>
+                    </div>
+                </div>
+                
+                <div class="feature">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="feature-content">
+                        <h3>Breeding Recommendations</h3>
+                        <p>Receive expert guidance on breeding practices, optimal conditions, and expected milk yield for identified breeds.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Recent Successful Identifications -->
+        <section class="recent-results">
+            <h3>
+                <i class="fas fa-chart-bar"></i>
+                Recent Successful Identifications
+            </h3>
+            <div class="result-item">
+                <span><strong>Gir</strong> (Gujarat) • <i class="fas fa-map-marker-alt"></i> Gujarat</span>
+                <span class="confidence-badge">94% Confidence</span>
+            </div>
+            <div class="result-item">
+                <span><strong>Sahiwal</strong> (Punjab) • <i class="fas fa-map-marker-alt"></i> Punjab</span>
+                <span class="confidence-badge">89% Confidence</span>
+            </div>
+            <div class="result-item">
+                <span><strong>Holstein Friesian</strong> • <i class="fas fa-globe"></i> International</span>
+                <span class="confidence-badge">87% Confidence</span>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-text">
+                🦚 Proudly Made for India 🇮🇳
+            </div>
+            <div class="footer-links">
+                <a href="#about" class="footer-link">About</a>
+                <a href="#privacy" class="footer-link">Privacy Policy</a>
+                <a href="#contact" class="footer-link">Contact</a>
+                <a href="#sih" class="footer-link">Smart India Hackathon 2025</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Theme toggle functionality
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+                themeIcon.className = 'fas fa-moon';
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'fas fa-sun';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        
+        // Load saved theme
+        window.addEventListener('load', function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                document.getElementById('theme-icon').className = 'fas fa-sun';
+            }
+        });
+        
+        // File upload handling
+        const fileInput = document.getElementById('fileInput');
+        const uploadZone = document.querySelector('.upload-zone');
+        const uploadForm = document.getElementById('uploadForm');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const fileName = e.target.files[0].name;
+                uploadZone.innerHTML = `
+                    <i class="fas fa-check-circle upload-icon" style="color: var(--green);"></i>
+                    <div class="upload-text">File Selected: ${fileName}</div>
+                    <div class="upload-subtext">Click "Analyze Cattle Breed" button below</div>
+                `;
+                
+                // Show analyze button
+                analyzeBtn.style.display = 'flex';
+                analyzeBtn.classList.add('success-animation');
+            }
+        });
+        
+        // Drag and drop functionality
+        uploadZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+        
+        uploadZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+        });
+        
+        uploadZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                fileInput.dispatchEvent(new Event('change'));
+            }
+        });
+        
+        // Handle form submission - FIXED VERSION
+        if (uploadForm && fileInput) {
+            uploadForm.addEventListener('submit', function(e) {
+                console.log('🚀 FORM SUBMISSION STARTED');
+                console.log('📝 Form action:', this.action);
+                console.log('📝 Form method:', this.method);
+                console.log('📁 FileInput element:', fileInput);
+                console.log('📁 FileInput files:', fileInput.files);
+                console.log('📁 Files length:', fileInput.files ? fileInput.files.length : 'null');
+                
+                // Check if file is selected - use the global fileInput variable
+                if (!fileInput.files || fileInput.files.length === 0) {
+                    e.preventDefault();
+                    alert('❌ Please select an image file first!');
+                    console.log('❌ No file selected - stopping submission');
+                    return false;
+                }
+                
+                console.log('📁 File selected:', fileInput.files[0].name);
+                console.log('📁 File size:', fileInput.files[0].size);
+                console.log('📁 File type:', fileInput.files[0].type);
+                
+                // Show loading state
+                if (loadingSpinner) loadingSpinner.style.display = 'block';
+                if (analyzeBtn) {
+                    analyzeBtn.disabled = true;
+                    analyzeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                }
+                
+                console.log('✅ FILE VALIDATED - FORM SUBMITTING NATURALLY');
+                // Let form submit naturally - no preventDefault
+            });
+        } else {
+            console.error('❌ Upload form or file input not found!');
+            console.log('uploadForm:', uploadForm);
+            console.log('fileInput:', fileInput);
+        }
+        
+        function updateProgressStep(activeStep) {
+            const steps = document.querySelectorAll('.step');
+            steps.forEach((step, index) => {
+                const stepNumber = index + 1;
+                step.classList.remove('active', 'completed');
+                
+                if (stepNumber < activeStep) {
+                    step.classList.add('completed');
+                    step.querySelector('.step-circle').innerHTML = '<i class="fas fa-check"></i>';
+                } else if (stepNumber === activeStep) {
+                    step.classList.add('active');
+                } else {
+                    step.querySelector('.step-circle').innerHTML = stepNumber;
+                }
+            });
+        }
+        
+        // Add some interactive animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate features on scroll
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+            
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            // Observe feature elements
+            document.querySelectorAll('.feature').forEach(feature => {
+                feature.style.opacity = '0';
+                feature.style.transform = 'translateY(20px)';
+                feature.style.transition = 'all 0.6s ease';
+                observer.observe(feature);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+{
+  "results": {
+    "timestamp": "2025-09-22T21:25:50.357853",
+    "breed_predictions": [
+      {
+        "breed": "Malnad_gidda",
+        "confidence": 0.7527435421943665,
+        "rank": 1,
+        "percentage": "75.3%"
+      },
+      {
+        "breed": "Kasargod",
+        "confidence": 0.14825884997844696,
+        "rank": 2,
+        "percentage": "14.8%"
+      },
+      {
+        "breed": "Vechur",
+        "confidence": 0.05644989758729935,
+        "rank": 3,
+        "percentage": "5.6%"
+      },
+      {
+        "breed": "Red_Sindhi",
+        "confidence": 0.03056042082607746,
+        "rank": 4,
+        "percentage": "3.1%"
+      },
+      {
+        "breed": "Nimari",
+        "confidence": 0.004520231392234564,
+        "rank": 5,
+        "percentage": "0.5%"
+      }
+    ],
+    "additional_predictions": {
+      "gender": {
+        "prediction": "Male",
+        "confidence": 0.5850825309753418
+      },
+      "age_group": {
+        "prediction": "Young (< 2 years)",
+        "confidence": 0.3741137683391571
+      }
+    },
+    "health_assessment": {
+      "body_condition_score": 5.0,
+      "bcs_category": "Moderate - Optimal for most breeds",
+      "health_status": "Good - Unable to assess from image",
+      "visual_assessment": {
+        "image_quality": "Unknown"
+      },
+      "recommendations": [
+        "Provide balanced nutrition",
+        "Regular veterinary checkups"
+      ]
+    },
+    "breed_analysis": {
+      "breed_name": "Malnad_gidda",
+      "confidence": 0.7527435421943665,
+      "breed_info": {},
+      "predictions": {
+        "breed": "Malnad_gidda",
+        "confidence": 0.7527435421943665,
+        "rank": 1,
+        "percentage": "75.3%"
+      },
+      "recommendations": [],
+      "management_tips": [],
+      "breeding_advice": [
+        "Too young for breeding - wait 3 months"
+      ]
+    },
+    "model_insights": {
+      "attention_score": 0.8407006859779358,
+      "feature_quality": "High",
+      "model_accuracy": "52.3%",
+      "model_type": "Fine-tuned ResNet50"
+    },
+    "recommendations": {
+      "immediate_actions": [],
+      "long_term_planning": []
+    }
+  },
+  "image_path": "20250922_212550_MG.jpg",
+  "timestamp": "2025-09-22T21:25:50.358027"
+}

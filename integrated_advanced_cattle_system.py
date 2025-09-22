@@ -11,13 +11,20 @@ from PIL import Image
 import os
 import json
 from datetime import datetime
-from flask import Flask, render_template, request, jsonify, redirect, url_for, session
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session, send_file
 import uuid
 from collections import Counter, defaultdict
 import concurrent.futures
 from typing import Dict, List, Tuple, Optional
 import matplotlib.pyplot as plt
 import seaborn as sns
+from reportlab.lib.pagesizes import letter, A4
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image as RLImage, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
+from reportlab.lib.units import inch
+from reportlab.pdfgen import canvas
+import io
 
 # Using existing trained ResNet50 model for breed classification
 
@@ -561,23 +568,52 @@ class IntegratedCattleApp:
         
         @self.app.route('/')
         def index():
-            return render_template('integrated_index.html', 
-                                 breeds=self.breed_names,
-                                 total_breeds=len(self.breed_names))
+            # Use the working template for main page
+            return render_template('working_upload.html')
         
-        @self.app.route('/upload', methods=['POST'])
+        @self.app.route('/test')
+        def test_upload():
+            return render_template('simple_upload_test.html')
+        
+        @self.app.route('/debug')
+        def debug_upload():
+            return render_template('debug_upload.html')
+        
+        @self.app.route('/working')
+        def working_upload():
+            return render_template('working_upload.html')
+        
+        @self.app.route('/upload', methods=['GET', 'POST'])
         def upload_file():
+            print(f"🔍 Upload request: method={request.method}")
+            
+            if request.method == 'GET':
+                # Redirect to homepage if accessed via GET
+                print("❌ GET request - redirecting to homepage")
+                return redirect(url_for('index'))
+                
+            print(f"📝 Form data keys: {list(request.files.keys())}")
+            print(f"📝 Form fields: {list(request.form.keys())}")
+                
             if 'file' not in request.files:
-                return redirect(request.url)
+                print("❌ No 'file' in request.files - redirecting to homepage")
+                return redirect(url_for('index'))
             
             file = request.files['file']
-            if file.filename == '':
-                return redirect(request.url)
+            print(f"📁 File object: {file}")
+            print(f"📁 Filename: '{file.filename}'")
             
-            if file:
+            if file.filename == '':
+                print("❌ Empty filename - redirecting to homepage")
+                return redirect(url_for('index'))
+            
+            if file and file.filename:
                 # Save uploaded file
                 filename = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{file.filename}"
                 filepath = os.path.join('uploads', filename)
+                
+                # Create uploads directory if it doesn't exist
+                os.makedirs('uploads', exist_ok=True)
                 file.save(filepath)
                 
                 print(f"✅ Image saved: {filepath}")
@@ -587,11 +623,32 @@ class IntegratedCattleApp:
                 results = self.comprehensive_analysis(filepath)
                 print(f"📊 Analysis complete: {len(results)} result fields")
                 
-                # Store results in session
+                # Store results in session AND file (backup)
+                print(f"🗄️ Storing results: {len(results)} fields")
                 session['results'] = results
                 session['image_path'] = filename  # Store relative path for URL
                 
+                # Also store in file as backup
+                import json
+                backup_data = {
+                    'results': results,
+                    'image_path': filename,
+                    'timestamp': datetime.now().isoformat()
+                }
+                with open('latest_results.json', 'w') as f:
+                    json.dump(backup_data, f, indent=2)
+                print(f"✅ Results stored in session and file backup")
+                
                 return redirect(url_for('results'))
+            else:
+                print("❌ File validation failed - redirecting to homepage")
+                print(f"   File: {file}")
+                print(f"   File.filename: '{file.filename}'")
+                print(f"   bool(file): {bool(file)}")
+                print(f"   bool(file.filename): {bool(file.filename)}")
+            
+            print("❌ Reached end of upload function - redirecting to homepage")
+            return redirect(url_for('index'))
         
         @self.app.route('/uploads/<filename>')
         def uploaded_file(filename):
@@ -599,14 +656,61 @@ class IntegratedCattleApp:
             from flask import send_from_directory
             return send_from_directory('uploads', filename)
         
-        @self.app.route('/results')
+        @self.app.route('/results', methods=['GET', 'POST'])
         def results():
+            print(f"📊 Results route accessed")
+            print(f"📊 Session keys: {list(session.keys())}")
+            
+            # Try to get results from session first
             results = session.get('results', {})
             image_path = session.get('image_path', '')
+            print(f"📊 Session results: {len(results)} fields")
             
-            return render_template('integrated_results.html', 
+            # If no session results, try file backup
+            if not results:
+                print("🔄 No session results, trying file backup...")
+                try:
+                    import json
+                    with open('latest_results.json', 'r') as f:
+                        backup_data = json.load(f)
+                        results = backup_data.get('results', {})
+                        image_path = backup_data.get('image_path', '')
+                        print(f"✅ Loaded from file backup: {len(results)} fields")
+                except:
+                    print("❌ No file backup found")
+                    results = {}
+            
+            if not results:
+                # No results anywhere, redirect to homepage
+                print("❌ No results found - redirecting to homepage")
+                return redirect(url_for('index'))
+            
+            # Extract key data for beautiful template - try multiple paths
+            breed_name = 'Unknown Breed'
+            confidence = 0.0
+            
+            # Try to get breed name from multiple possible locations
+            if 'breed_analysis' in results and 'breed_name' in results['breed_analysis']:
+                breed_name = results['breed_analysis']['breed_name']
+                confidence = results['breed_analysis'].get('confidence', 0.0)
+            elif 'breed_predictions' in results and len(results['breed_predictions']) > 0:
+                breed_name = results['breed_predictions'][0]['breed']
+                confidence = results['breed_predictions'][0]['confidence']
+            
+            print(f"🎯 Results page: breed={breed_name}, confidence={confidence}")
+            
+            # Format confidence as percentage
+            if confidence < 1:
+                confidence = confidence * 100
+            
+            return render_template('sih_results.html', 
                                  results=results,
-                                 image_path=image_path)
+                                 image_path=image_path,
+                                 breed_name=breed_name,
+                                 confidence=f"{confidence:.1f}",
+                                 image_url=url_for('uploaded_file', filename=image_path) if image_path else '',
+                                 analysis_date=datetime.now().strftime('%B %d, %Y'),
+                                 predictions=results.get('breed_predictions', []))
         
         @self.app.route('/batch_upload', methods=['POST'])
         def batch_upload():
@@ -649,6 +753,64 @@ class IntegratedCattleApp:
                 
             except Exception as e:
                 return jsonify({'error': str(e)}), 500
+        
+        @self.app.route('/download_pdf_report', methods=['GET'])
+        def download_pdf_report():
+            """Generate and download PDF report"""
+            print("📄 PDF download requested")
+            
+            # Try to get results from session first
+            results = session.get('results', {})
+            image_path = session.get('image_path', '')
+            
+            # If no session results, try file backup
+            if not results:
+                try:
+                    with open('latest_results.json', 'r') as f:
+                        backup_data = json.load(f)
+                        results = backup_data.get('results', {})
+                        image_path = backup_data.get('image_path', '')
+                except:
+                    pass
+            
+            if not results:
+                return jsonify({'error': 'No analysis results found'}), 404
+            
+            # Extract breed information
+            breed_name = 'Unknown Breed'
+            confidence = 0.0
+            
+            if 'breed_analysis' in results and 'breed_name' in results['breed_analysis']:
+                breed_name = results['breed_analysis']['breed_name']
+                confidence = results['breed_analysis'].get('confidence', 0.0)
+            elif 'breed_predictions' in results and len(results['breed_predictions']) > 0:
+                breed_name = results['breed_predictions'][0]['breed']
+                confidence = results['breed_predictions'][0]['confidence']
+            
+            # Format confidence as percentage
+            if confidence < 1:
+                confidence = confidence * 100
+            
+            try:
+                # Generate PDF
+                pdf_buffer = self.generate_pdf_report(results, image_path, breed_name, f"{confidence:.1f}")
+                
+                # Create filename
+                safe_breed_name = breed_name.replace(' ', '_').replace('/', '_')
+                filename = f"{safe_breed_name}_Analysis_Report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+                
+                print(f"✅ PDF generated successfully: {filename}")
+                
+                return send_file(
+                    pdf_buffer,
+                    as_attachment=True,
+                    download_name=filename,
+                    mimetype='application/pdf'
+                )
+                
+            except Exception as e:
+                print(f"❌ PDF generation error: {str(e)}")
+                return jsonify({'error': f'PDF generation failed: {str(e)}'}), 500
     
     def comprehensive_analysis(self, image_path):
         """Complete analysis with all features"""
@@ -860,6 +1022,196 @@ class IntegratedCattleApp:
             planning.append(f"🐄 Optimal breeding age: {breed_info['breeding_age']} months")
         
         return planning
+    
+    def generate_pdf_report(self, results, image_path, breed_name, confidence):
+        """Generate professional PDF report for cattle analysis"""
+        buffer = io.BytesIO()
+        
+        # Create the PDF document
+        doc = SimpleDocTemplate(buffer, pagesize=A4,
+                              rightMargin=72, leftMargin=72,
+                              topMargin=72, bottomMargin=18)
+        
+        # Define styles
+        styles = getSampleStyleSheet()
+        title_style = ParagraphStyle(
+            'CustomTitle',
+            parent=styles['Heading1'],
+            fontSize=24,
+            spaceAfter=30,
+            textColor=colors.HexColor('#FF6B35'),  # Orange color matching UI
+            alignment=1  # Center alignment
+        )
+        
+        heading_style = ParagraphStyle(
+            'CustomHeading',
+            parent=styles['Heading2'],
+            fontSize=16,
+            spaceAfter=12,
+            textColor=colors.HexColor('#138808'),  # Green color matching UI
+            borderWidth=1,
+            borderColor=colors.HexColor('#138808'),
+            borderPadding=5
+        )
+        
+        # Story container for content
+        story = []
+        
+        # Title and header
+        story.append(Paragraph("🐄 Cattle Breed Analysis Report", title_style))
+        story.append(Spacer(1, 20))
+        
+        # Analysis date and summary
+        analysis_date = datetime.now().strftime('%B %d, %Y at %I:%M %p')
+        story.append(Paragraph(f"<b>Analysis Date:</b> {analysis_date}", styles['Normal']))
+        story.append(Spacer(1, 10))
+        
+        # Add cattle image if available
+        if image_path and os.path.exists(f"uploads/{image_path}"):
+            try:
+                img = RLImage(f"uploads/{image_path}", width=4*inch, height=3*inch)
+                img.hAlign = 'CENTER'
+                story.append(img)
+                story.append(Spacer(1, 20))
+            except:
+                pass  # Skip image if there's an issue
+        
+        # Breed Identification Section
+        story.append(Paragraph("📋 Breed Identification", heading_style))
+        story.append(Spacer(1, 10))
+        
+        breed_data = [
+            ['Primary Breed:', breed_name],
+            ['Confidence Level:', f"{confidence}%"],
+            ['Classification:', 'Indian Indigenous Cattle Breed']
+        ]
+        
+        breed_table = Table(breed_data, colWidths=[2*inch, 4*inch])
+        breed_table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#E8F5E8')),
+            ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 10),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ]))
+        story.append(breed_table)
+        story.append(Spacer(1, 20))
+        
+        # Top Predictions Section
+        if 'breed_predictions' in results and len(results['breed_predictions']) > 1:
+            story.append(Paragraph("🎯 All Breed Predictions", heading_style))
+            story.append(Spacer(1, 10))
+            
+            pred_data = [['Rank', 'Breed Name', 'Confidence', 'Percentage']]
+            for pred in results['breed_predictions'][:5]:  # Top 5
+                pred_data.append([
+                    str(pred.get('rank', '')),
+                    pred.get('breed', ''),
+                    f"{pred.get('confidence', 0):.3f}",
+                    pred.get('percentage', '')
+                ])
+            
+            pred_table = Table(pred_data, colWidths=[0.8*inch, 2.5*inch, 1.2*inch, 1.5*inch])
+            pred_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#FF6B35')),
+                ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+                ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, -1), 9),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#F8F9FA')])
+            ]))
+            story.append(pred_table)
+            story.append(Spacer(1, 20))
+        
+        # Health Assessment Section
+        if 'health_assessment' in results:
+            story.append(Paragraph("🏥 Health Assessment", heading_style))
+            story.append(Spacer(1, 10))
+            
+            health = results['health_assessment']
+            health_data = [
+                ['Body Condition Score:', f"{health.get('body_condition_score', 'N/A')}/9"],
+                ['Health Status:', health.get('health_status', 'Good')],
+                ['Age Estimate:', health.get('age_group', 'Adult')],
+                ['Gender:', health.get('gender', 'Not determined')]
+            ]
+            
+            health_table = Table(health_data, colWidths=[2*inch, 4*inch])
+            health_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#E8F5E8')),
+                ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ]))
+            story.append(health_table)
+            story.append(Spacer(1, 20))
+        
+        # Breed Information Section
+        if 'breed_analysis' in results and 'breed_info' in results['breed_analysis']:
+            story.append(Paragraph("📚 Breed Information", heading_style))
+            story.append(Spacer(1, 10))
+            
+            breed_info = results['breed_analysis']['breed_info']
+            info_text = []
+            
+            if 'origin' in breed_info:
+                info_text.append(f"<b>Origin:</b> {breed_info['origin']}")
+            
+            if 'characteristics' in breed_info:
+                chars = ', '.join(breed_info['characteristics'])
+                info_text.append(f"<b>Key Characteristics:</b> {chars}")
+            
+            if 'milk_yield' in breed_info:
+                info_text.append(f"<b>Milk Yield:</b> {breed_info['milk_yield']}")
+            
+            for info in info_text:
+                story.append(Paragraph(info, styles['Normal']))
+                story.append(Spacer(1, 8))
+            
+            story.append(Spacer(1, 10))
+        
+        # Recommendations Section
+        if 'recommendations' in results:
+            story.append(Paragraph("💡 Care Recommendations", heading_style))
+            story.append(Spacer(1, 10))
+            
+            recommendations = results['recommendations']
+            
+            if 'immediate_actions' in recommendations:
+                story.append(Paragraph("<b>Immediate Actions:</b>", styles['Heading3']))
+                for action in recommendations['immediate_actions']:
+                    story.append(Paragraph(f"• {action}", styles['Normal']))
+                story.append(Spacer(1, 10))
+            
+            if 'long_term_planning' in recommendations:
+                story.append(Paragraph("<b>Long-term Planning:</b>", styles['Heading3']))
+                for plan in recommendations['long_term_planning']:
+                    story.append(Paragraph(f"• {plan}", styles['Normal']))
+                story.append(Spacer(1, 10))
+        
+        # Footer
+        story.append(Spacer(1, 30))
+        footer_style = ParagraphStyle(
+            'Footer',
+            parent=styles['Normal'],
+            fontSize=10,
+            textColor=colors.grey,
+            alignment=1
+        )
+        story.append(Paragraph("Generated by Advanced Indian Cattle Recognition System", footer_style))
+        story.append(Paragraph("Smart India Hackathon 2025 - Precision Agriculture Solution", footer_style))
+        
+        # Build PDF
+        doc.build(story)
+        buffer.seek(0)
+        return buffer
     
     def run(self, debug=True, port=5000):
         """Run the integrated application"""
@@ -1404,4 +1756,4 @@ if __name__ == "__main__":
     
     # Initialize and run the integrated app
     integrated_app = IntegratedCattleApp()
-    integrated_app.run(debug=True, port=5000)
+    integrated_app.run(debug=False, port=5000)

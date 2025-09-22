@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐄 Indian Cattle Breed Analyzer - Smart India Hackathon 2025</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --saffron: #FF9933;
+            --saffron-light: #FFE5CC;
+            --white: #ffffff;
+            --green: #138808;
+            --green-light: #E8F5E8;
+            --neutral-dark: #2c3e50;
+            --neutral-medium: #bdc3c7;
+            --space-8: 3rem;
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--saffron-light) 0%, var(--white) 40%, var(--green-light) 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: var(--space-8);
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            border-top: 5px solid var(--saffron);
+        }
+        
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .title {
+            font-size: 2.5rem;
+            color: var(--neutral-dark);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: var(--saffron);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .upload-container {
+            background: white;
+            border-radius: 16px;
+            padding: var(--space-8);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: var(--space-8);
+            border: 3px dashed var(--neutral-medium);
+            transition: all 0.3s ease;
+        }
+        
+        .upload-zone {
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .upload-zone:hover {
+            background: var(--saffron-light);
+            border-color: var(--saffron);
+            transform: translateY(-2px);
+        }
+        
+        .upload-icon {
+            font-size: 4rem;
+            color: var(--saffron);
+            margin-bottom: 1rem;
+        }
+        
+        .upload-text {
+            font-size: 1.5rem;
+            color: var(--neutral-dark);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .upload-subtext {
+            color: var(--neutral-medium);
+            font-size: 1rem;
+        }
+        
+        .action-button {
+            background: linear-gradient(135deg, var(--saffron) 0%, #ff6b35 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 15px rgba(255, 153, 51, 0.3);
+        }
+        
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 153, 51, 0.4);
+        }
+        
+        .loading-spinner {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--saffron-light);
+            border-top: 4px solid var(--saffron);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .status {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            display: none;
+        }
+        
+        .status.success {
+            background: var(--green-light);
+            color: var(--green);
+            border: 1px solid var(--green);
+        }
+        
+        .status.error {
+            background: #ffe6e6;
+            color: #cc0000;
+            border: 1px solid #cc0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">🐄🇮🇳</div>
+            <h1 class="title">Indian Cattle Breed Analyzer</h1>
+            <p class="subtitle">Smart India Hackathon 2025 • AI-Powered Breed Recognition</p>
+        </div>
+
+        <!-- Upload Section -->
+        <div class="upload-container">
+            <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data">
+                <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+                    <i class="fas fa-camera upload-icon"></i>
+                    <div class="upload-text">Click to Upload Cattle Image</div>
+                    <div class="upload-subtext">Supports: JPG, PNG, WEBP • Max size: 10MB</div>
+                    <input type="file" id="fileInput" name="file" accept="image/*" required style="display: none;">
+                </div>
+                
+                <!-- Submit Button -->
+                <div style="text-align: center; margin-top: 20px;">
+                    <button type="submit" id="analyzeBtn" class="action-button" style="display: none;">
+                        <i class="fas fa-brain"></i>
+                        Analyze Cattle Breed
+                    </button>
+                </div>
+            </form>
+            
+            <div class="loading-spinner" id="loadingSpinner"></div>
+            <div id="statusMessage" class="status"></div>
+        </div>
+    </div>
+
+    <script>
+        const uploadForm = document.getElementById('uploadForm');
+        const fileInput = document.getElementById('fileInput');
+        const uploadZone = document.querySelector('.upload-zone');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const statusMessage = document.getElementById('statusMessage');
+
+        // File input change handler
+        fileInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                const fileName = e.target.files[0].name;
+                uploadZone.innerHTML = `
+                    <i class="fas fa-check-circle upload-icon" style="color: var(--green);"></i>
+                    <div class="upload-text">File Selected: ${fileName}</div>
+                    <div class="upload-subtext">Click "Analyze Cattle Breed" button below</div>
+                `;
+                
+                // Show analyze button
+                analyzeBtn.style.display = 'flex';
+                
+                // Hide any previous status messages
+                statusMessage.style.display = 'none';
+            }
+        });
+
+        // Form submission handler
+        uploadForm.addEventListener('submit', function(e) {
+            console.log('🚀 Form submission started');
+            
+            // Validate file
+            if (!fileInput.files || fileInput.files.length === 0) {
+                e.preventDefault();
+                showStatus('Please select an image file first!', 'error');
+                return false;
+            }
+            
+            console.log('📁 File:', fileInput.files[0].name);
+            console.log('📝 Form action:', uploadForm.action);
+            console.log('📝 Form method:', uploadForm.method);
+            
+            // Show loading state
+            loadingSpinner.style.display = 'block';
+            analyzeBtn.style.display = 'none';
+            uploadZone.style.opacity = '0.6';
+            
+            // Update upload zone
+            uploadZone.innerHTML = `
+                <i class="fas fa-brain upload-icon" style="color: var(--saffron);"></i>
+                <div class="upload-text">Analyzing Your Cattle...</div>
+                <div class="upload-subtext">AI is processing the image</div>
+            `;
+            
+            showStatus('Processing image with AI...', 'success');
+            
+            console.log('✅ Form submitting to backend...');
+            // Form will submit naturally - no preventDefault
+        });
+        
+        // Drag and drop functionality
+        uploadZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadZone.style.background = 'var(--saffron-light)';
+        });
+        
+        uploadZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            uploadZone.style.background = '';
+        });
+        
+        uploadZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadZone.style.background = '';
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                fileInput.dispatchEvent(new Event('change'));
+            }
+        });
+        
+        function showStatus(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = `status ${type}`;
+            statusMessage.style.display = 'block';
+        }
+    </script>
+</body>
+</html>

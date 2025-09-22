@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 {{ breed_name }} - Analysis Results | Indian Cattle Recognition</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Hind:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Indian Tricolor Inspired Colors */
+            --saffron: #FF9933;
+            --saffron-light: #FFCC99;
+            --saffron-dark: #E67300;
+            --white: #FFFFFF;
+            --green: #138808;
+            --green-light: #66BB6A;
+            --green-dark: #0A5E03;
+            --navy-blue: #000080;
+            
+            /* Supporting Palette */
+            --neutral-light: #F5F5F5;
+            --neutral-medium: #E0E0E0;
+            --neutral-dark: #616161;
+            --error: #D32F2F;
+            --success: #388E3C;
+            
+            /* Typography */
+            --font-primary: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-secondary: 'Hind', 'Arial', sans-serif;
+            
+            /* Spacing */
+            --space-1: 0.25rem;
+            --space-2: 0.5rem;
+            --space-3: 0.75rem;
+            --space-4: 1rem;
+            --space-6: 1.5rem;
+            --space-8: 2rem;
+            --space-12: 3rem;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-primary);
+            background: linear-gradient(135deg, #FFF8F0 0%, #F0FFF0 100%);
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 3px solid;
+            border-image: linear-gradient(90deg, var(--saffron), var(--white), var(--green)) 1;
+            padding: var(--space-4) 0;
+            z-index: 1000;
+            box-shadow: var(--shadow-md);
+        }
+        
+        .header-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 var(--space-6);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--navy-blue);
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--saffron), var(--green));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .back-button {
+            background: var(--saffron);
+            color: white;
+            text-decoration: none;
+            padding: var(--space-3) var(--space-6);
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+        
+        .back-button:hover {
+            background: var(--saffron-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        /* Main Container */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: var(--space-8) var(--space-6);
+        }
+        
+        /* Results Hero */
+        .results-hero {
+            text-align: center;
+            margin-bottom: var(--space-8);
+        }
+        
+        .success-icon {
+            font-size: 4rem;
+            color: var(--green);
+            margin-bottom: var(--space-4);
+            animation: bounce 1s ease;
+        }
+        
+        .breed-name {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--navy-blue);
+            margin-bottom: var(--space-2);
+        }
+        
+        .confidence-score {
+            font-size: 1.5rem;
+            color: var(--green);
+            font-weight: 600;
+            margin-bottom: var(--space-6);
+        }
+        
+        .analysis-summary {
+            font-size: 1.125rem;
+            color: var(--neutral-dark);
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        /* Results Grid */
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-8);
+            margin-bottom: var(--space-8);
+        }
+        
+        /* Image Analysis */
+        .image-analysis {
+            background: white;
+            border-radius: 16px;
+            padding: var(--space-6);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .analysis-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: var(--space-4);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .image-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+            color: var(--neutral-dark);
+            background: var(--neutral-light);
+            padding: var(--space-2) var(--space-4);
+            border-radius: 8px;
+        }
+        
+        /* Breed Information */
+        .breed-info {
+            background: white;
+            border-radius: 16px;
+            padding: var(--space-6);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .breed-info h2 {
+            color: var(--navy-blue);
+            margin-bottom: var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+        
+        .info-section {
+            margin-bottom: var(--space-6);
+        }
+        
+        .info-section:last-child {
+            margin-bottom: 0;
+        }
+        
+        .info-section h3 {
+            color: var(--saffron-dark);
+            margin-bottom: var(--space-2);
+            font-size: 1.125rem;
+        }
+        
+        .info-section p {
+            color: var(--neutral-dark);
+            line-height: 1.6;
+            margin-bottom: var(--space-2);
+        }
+        
+        .info-section ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .info-section li {
+            color: var(--neutral-dark);
+            padding: var(--space-1) 0;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+        
+        .info-section li::before {
+            content: '🔸';
+            color: var(--saffron);
+        }
+        
+        /* Confidence Breakdown */
+        .confidence-breakdown {
+            background: white;
+            border-radius: 16px;
+            padding: var(--space-6);
+            box-shadow: var(--shadow-lg);
+            margin-bottom: var(--space-8);
+        }
+        
+        .confidence-breakdown h2 {
+            color: var(--navy-blue);
+            margin-bottom: var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+        
+        .top-predictions {
+            display: grid;
+            gap: var(--space-4);
+        }
+        
+        .prediction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-3) var(--space-4);
+            background: var(--neutral-light);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .prediction-item:hover {
+            background: var(--saffron-light);
+            transform: translateX(4px);
+        }
+        
+        .prediction-item.primary {
+            background: linear-gradient(135deg, var(--saffron-light), var(--green-light));
+            border: 2px solid var(--saffron);
+        }
+        
+        .prediction-name {
+            font-weight: 500;
+            color: var(--navy-blue);
+        }
+        
+        .prediction-confidence {
+            font-weight: 600;
+            color: var(--green);
+            padding: var(--space-1) var(--space-3);
+            background: white;
+            border-radius: 15px;
+            box-shadow: var(--shadow-sm);
+        }
+        
+        /* Health & Care Section */
+        .health-care {
+            background: linear-gradient(135deg, var(--green-light), var(--saffron-light));
+            border-radius: 16px;
+            padding: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+        
+        .health-care h2 {
+            color: var(--navy-blue);
+            margin-bottom: var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+        
+        .care-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-4);
+        }
+        
+        .care-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: var(--space-4);
+            backdrop-filter: blur(10px);
+        }
+        
+        .care-card h3 {
+            color: var(--navy-blue);
+            margin-bottom: var(--space-2);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+        
+        .care-card p {
+            color: var(--neutral-dark);
+            line-height: 1.5;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-4);
+            margin-bottom: var(--space-8);
+            flex-wrap: wrap;
+        }
+        
+        .action-button {
+            background: var(--saffron);
+            color: white;
+            text-decoration: none;
+            padding: var(--space-3) var(--space-6);
+            border-radius: 25px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+        
+        .action-button:hover {
+            background: var(--saffron-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .action-button.secondary {
+            background: var(--green);
+        }
+        
+        .action-button.secondary:hover {
+            background: var(--green-dark);
+        }
+        
+        .action-button.outline {
+            background: transparent;
+            color: var(--nav-blue);
+            border: 2px solid var(--saffron);
+        }
+        
+        .action-button.outline:hover {
+            background: var(--saffron);
+            color: white;
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--navy-blue);
+            color: white;
+            padding: var(--space-6) 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer::before {
+            content: '🦚';
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            font-size: 3rem;
+            opacity: 0.3;
+        }
+        
+        .footer-content {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 var(--space-6);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .breed-name {
+                font-size: 2.5rem;
+            }
+            
+            .confidence-score {
+                font-size: 1.25rem;
+            }
+            
+            .header-content {
+                padding: 0 var(--space-4);
+            }
+            
+            .container {
+                padding: var(--space-6) var(--space-4);
+            }
+            
+            .care-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .action-button {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .breed-name {
+                font-size: 2rem;
+            }
+            
+            .image-analysis {
+                padding: var(--space-4);
+            }
+            
+            .breed-info {
+                padding: var(--space-4);
+            }
+            
+            .confidence-breakdown {
+                padding: var(--space-4);
+            }
+            
+            .health-care {
+                padding: var(--space-4);
+            }
+        }
+        
+        /* Animations */
+        @keyframes bounce {
+            0%, 20%, 53%, 100% {
+                transform: translate3d(0,0,0);
+            }
+            40%, 43% {
+                transform: translate3d(0, -15px, 0);
+            }
+            70% {
+                transform: translate3d(0, -7px, 0);
+            }
+            90% {
+                transform: translate3d(0, -2px, 0);
+            }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    🇮🇳
+                </div>
+                <span>Indian Cattle Breed Recognition</span>
+            </div>
+            <a href="/" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+                Analyze Another
+            </a>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Results Hero -->
+        <section class="results-hero fade-in-up">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h1 class="breed-name">{{ breed_name }}</h1>
+            <div class="confidence-score">
+                <i class="fas fa-chart-line"></i>
+                {{ confidence }}% Confidence
+            </div>
+            <p class="analysis-summary">
+                {{ analysis_summary|default("Our AI has successfully identified your cattle breed with high confidence. Below you'll find detailed information about this breed's characteristics, care requirements, and breeding recommendations.") }}
+            </p>
+        </section>
+
+        <!-- Results Grid -->
+        <div class="results-grid">
+            <!-- Image Analysis -->
+            <section class="image-analysis fade-in-up">
+                <img src="{{ image_url }}" alt="Analyzed {{ breed_name }}" class="analysis-image">
+                <div class="image-meta">
+                    <span><i class="fas fa-calendar"></i> {{ analysis_date }}</span>
+                    <span><i class="fas fa-camera"></i> {{ image_dimensions|default("Original Resolution") }}</span>
+                    <span><i class="fas fa-clock"></i> Analysis Time: {{ processing_time|default("< 3s") }}</span>
+                </div>
+            </section>
+
+            <!-- Breed Information -->
+            <section class="breed-info fade-in-up">
+                <h2>
+                    <i class="fas fa-info-circle"></i>
+                    Breed Information
+                </h2>
+                
+                <div class="info-section">
+                    <h3>🏆 Key Characteristics</h3>
+                    {% if characteristics %}
+                        <ul>
+                            {% for characteristic in characteristics %}
+                            <li>{{ characteristic }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>This is a {{ breed_type|default("native Indian") }} breed known for its {{ key_traits|default("resilience and adaptability to Indian climate conditions") }}.</p>
+                    {% endif %}
+                </div>
+                
+                <div class="info-section">
+                    <h3>🌍 Origin & Distribution</h3>
+                    <p>{{ origin_info|default("This breed originates from the Indian subcontinent and is well-adapted to local environmental conditions.") }}</p>
+                </div>
+                
+                <div class="info-section">
+                    <h3>🥛 Milk Production</h3>
+                    <p>{{ milk_production|default("Average daily milk yield varies based on feeding, care, and environmental factors. Consult with local veterinarians for specific guidance.") }}</p>
+                </div>
+                
+                <div class="info-section">
+                    <h3>📊 Physical Attributes</h3>
+                    <ul>
+                        <li>Average Weight: {{ average_weight|default("300-450 kg") }}</li>
+                        <li>Body Color: {{ body_color|default("Varies by individual") }}</li>
+                        <li>Horn Type: {{ horn_type|default("Natural variation") }}</li>
+                        <li>Size: {{ size_category|default("Medium to Large") }}</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+
+        <!-- Confidence Breakdown -->
+        <section class="confidence-breakdown fade-in-up">
+            <h2>
+                <i class="fas fa-chart-bar"></i>
+                Top Predictions
+            </h2>
+            <div class="top-predictions">
+                {% if predictions %}
+                    {% for prediction in predictions[:5] %}
+                    <div class="prediction-item {{ 'primary' if loop.first else '' }}">
+                        <span class="prediction-name">
+                            {% if loop.first %}
+                                <i class="fas fa-crown" style="color: var(--saffron); margin-right: 8px;"></i>
+                            {% endif %}
+                            {{ prediction.breed }}
+                        </span>
+                        <span class="prediction-confidence">{{ "%.1f"|format(prediction.confidence * 100) }}%</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="prediction-item primary">
+                        <span class="prediction-name">
+                            <i class="fas fa-crown" style="color: var(--saffron); margin-right: 8px;"></i>
+                            {{ breed_name }}
+                        </span>
+                        <span class="prediction-confidence">{{ confidence }}%</span>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+
+        <!-- Health & Care Section -->
+        <section class="health-care fade-in-up">
+            <h2>
+                <i class="fas fa-heartbeat"></i>
+                Health & Care Recommendations
+            </h2>
+            <div class="care-grid">
+                <div class="care-card">
+                    <h3>
+                        <i class="fas fa-leaf"></i>
+                        Feeding Guidelines
+                    </h3>
+                    <p>{{ feeding_guidelines|default("Provide fresh water, quality fodder, and balanced nutrition. Consider seasonal variations and consult local agricultural experts for specific dietary recommendations.") }}</p>
+                </div>
+                
+                <div class="care-card">
+                    <h3>
+                        <i class="fas fa-thermometer-half"></i>
+                        Climate Adaptation
+                    </h3>
+                    <p>{{ climate_info|default("This breed is well-adapted to Indian climate conditions. Ensure adequate shade and ventilation during hot weather.") }}</p>
+                </div>
+                
+                <div class="care-card">
+                    <h3>
+                        <i class="fas fa-stethoscope"></i>
+                        Health Monitoring
+                    </h3>
+                    <p>{{ health_monitoring|default("Regular veterinary check-ups, vaccination schedules, and monitoring for common diseases. Watch for signs of illness and maintain good hygiene.") }}</p>
+                </div>
+                
+                <div class="care-card">
+                    <h3>
+                        <i class="fas fa-dna"></i>
+                        Breeding Insights
+                    </h3>
+                    <p>{{ breeding_info|default("Selective breeding practices can improve milk yield and disease resistance. Consult with breeding specialists for genetic improvement programs.") }}</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Action Buttons -->
+        <section class="action-buttons">
+            <a href="/" class="action-button">
+                <i class="fas fa-camera"></i>
+                Analyze Another Image
+            </a>
+            <button onclick="downloadReport()" class="action-button secondary">
+                <i class="fas fa-download"></i>
+                Download Report
+            </button>
+            <button onclick="shareResults()" class="action-button outline">
+                <i class="fas fa-share"></i>
+                Share Results
+            </button>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <p>🦚 Proudly Developed for Smart India Hackathon 2025 🇮🇳</p>
+        </div>
+    </footer>
+
+    <script>
+        // Animate elements on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const elements = document.querySelectorAll('.fade-in-up');
+            elements.forEach((element, index) => {
+                setTimeout(() => {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+
+        // Download report functionality
+        function downloadReport() {
+            // Show loading message
+            const button = document.querySelector('.action-button.secondary');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+            button.disabled = true;
+            
+            // Create a temporary link to download PDF
+            const downloadLink = document.createElement('a');
+            downloadLink.href = '/download_pdf_report';
+            downloadLink.download = '';  // Let server determine filename
+            
+            // Add to DOM, click, and remove
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            
+            // Reset button after a short delay
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+                
+                // Show success message
+                alert('📄 PDF report download started! Check your downloads folder.');
+            }, 2000);
+        }
+
+        // Share results functionality
+        function shareResults() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Cattle Breed Analysis Results',
+                    text: `My cattle has been identified as {{ breed_name }} with {{ confidence }}% confidence using AI!`,
+                    url: window.location.href
+                });
+            } else {
+                // Fallback to copying URL
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    alert('🔗 Results URL copied to clipboard!');
+                });
+            }
+        }
+
+        // Add interactive hover effects
+        document.querySelectorAll('.prediction-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateX(8px) scale(1.02)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateX(0) scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

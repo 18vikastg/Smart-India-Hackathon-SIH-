@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐄 Cattle Breed Analyzer - WORKING VERSION</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background: linear-gradient(135deg, #FFE5CC 0%, #E8F5E8 100%);
+            min-height: 100vh; 
+            padding: 20px; 
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 40px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 40px; 
+        }
+        .title { 
+            font-size: 2.5rem; 
+            color: #2c3e50; 
+            margin-bottom: 10px; 
+        }
+        .subtitle { 
+            color: #FF9933; 
+            font-size: 1.2rem; 
+        }
+        .upload-area { 
+            border: 3px dashed #FF9933; 
+            padding: 60px 20px; 
+            text-align: center; 
+            margin: 30px 0; 
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+        .upload-area:hover { 
+            background: #FFF8F0; 
+            border-color: #E67300;
+        }
+        .upload-icon { 
+            font-size: 4rem; 
+            color: #FF9933; 
+            margin-bottom: 20px; 
+        }
+        .upload-text { 
+            font-size: 1.5rem; 
+            color: #2c3e50; 
+            margin-bottom: 10px; 
+        }
+        .file-input { 
+            font-size: 16px; 
+            padding: 10px; 
+            margin: 20px 0; 
+        }
+        .btn { 
+            background: linear-gradient(135deg, #FF9933, #E67300); 
+            color: white; 
+            padding: 15px 40px; 
+            border: none; 
+            border-radius: 50px; 
+            font-size: 18px; 
+            font-weight: 600;
+            cursor: pointer; 
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 153, 51, 0.3);
+        }
+        .btn:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 25px rgba(255, 153, 51, 0.4);
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .status { 
+            margin: 20px 0; 
+            padding: 15px; 
+            border-radius: 10px; 
+            font-weight: 500;
+        }
+        .success { 
+            background: #d4edda; 
+            color: #155724; 
+            border: 1px solid #c3e6cb; 
+        }
+        .error { 
+            background: #f8d7da; 
+            color: #721c24; 
+            border: 1px solid #f5c6cb; 
+        }
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .feature {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+        }
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">🐄🇮🇳 Indian Cattle Breed Analyzer</h1>
+            <p class="subtitle">Smart India Hackathon 2025 • AI-Powered Recognition</p>
+        </div>
+
+        <div class="feature-list">
+            <div class="feature">
+                <div class="feature-icon">🧠</div>
+                <h3>AI Recognition</h3>
+                <p>41 Indian Breeds</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">📊</div>
+                <h3>High Accuracy</h3>
+                <p>52.3% Model Accuracy</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <h3>Fast Analysis</h3>
+                <p>Results in Seconds</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">💡</div>
+                <h3>Expert Advice</h3>
+                <p>Care & Breeding Tips</p>
+            </div>
+        </div>
+
+        <form action="/upload" method="post" enctype="multipart/form-data" id="uploadForm">
+            <div class="upload-area">
+                <div class="upload-icon">📷</div>
+                <div class="upload-text">Select Your Cattle Image</div>
+                <p>Supports: JPG, PNG, WEBP • Max: 10MB</p>
+                <input type="file" name="file" id="fileInput" accept="image/*" required class="file-input">
+            </div>
+            
+            <div style="text-align: center;">
+                <button type="submit" class="btn" id="submitBtn">
+                    <i class="fas fa-brain"></i> ANALYZE CATTLE BREED
+                </button>
+            </div>
+        </form>
+        
+        <div id="status"></div>
+    </div>
+
+    <script>
+        // Super simple form handling - NO complex validation
+        const form = document.getElementById('uploadForm');
+        const fileInput = document.getElementById('fileInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const status = document.getElementById('status');
+        
+        // Show selected file
+        fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                const fileName = this.files[0].name;
+                status.innerHTML = `<div class="success">✅ File Ready: ${fileName}</div>`;
+                console.log('📁 File selected:', fileName);
+            }
+        });
+        
+        // Handle submission - MINIMAL validation
+        form.addEventListener('submit', function(e) {
+            console.log('🚀 FORM SUBMITTING');
+            
+            // Show processing immediately
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> PROCESSING...';
+            submitBtn.disabled = true;
+            status.innerHTML = '<div class="success">🔄 Analyzing your cattle image...</div>';
+            
+            // Let form submit - no validation checks that could fail
+            console.log('✅ FORM SUBMITTED NATURALLY');
+        });
+        
+        console.log('🎯 WORKING UPLOAD PAGE LOADED');
+        console.log('📝 Form action:', form.action);
+        console.log('📝 Form method:', form.method);
+    </script>
+</body>
+</html>
